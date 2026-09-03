@@ -10,6 +10,7 @@ import { toast } from "sonner"
 import { Eye, EyeOff, Loader2, Lock, Mail, User } from "lucide-react"
 
 import { authService } from "@/services/auth.service"
+import { useAuth } from "@/hooks/use-auth"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -48,6 +49,7 @@ type RegisterFormValues = z.infer<typeof registerSchema>
 
 export function RegisterForm() {
   const router = useRouter()
+  const { refreshUser } = useAuth()
   const [isLoading, setIsLoading] = React.useState(false)
   const [showPassword, setShowPassword] = React.useState(false)
 
@@ -66,14 +68,16 @@ export function RegisterForm() {
       const response = await authService.register(values)
 
       if (response.success && response.data?.accessToken) {
-        // Store access token in localStorage for client-side API requests
-        localStorage.setItem("accessToken", response.data.accessToken)
-        if (response.data.refreshToken) {
-          localStorage.setItem("refreshToken", response.data.refreshToken)
+        if (typeof window !== "undefined") {
+          localStorage.setItem("accessToken", response.data.accessToken)
+          if (response.data.refreshToken) {
+            localStorage.setItem("refreshToken", response.data.refreshToken)
+          }
         }
 
+        await refreshUser()
         toast.success(response.message || "Account created successfully!")
-        router.push("/")
+        router.push("/dashboard")
       } else {
         toast.error(response.message || "Failed to create account")
       }
