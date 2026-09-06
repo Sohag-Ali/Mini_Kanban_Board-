@@ -13,6 +13,11 @@ export interface DashboardTask extends Task {
   columnName: string
 }
 
+export interface BoardCountStats {
+  columnCount: number
+  taskCount: number
+}
+
 export interface DashboardOverviewData {
   tasks: DashboardTask[]
   totalTasks: number
@@ -20,6 +25,7 @@ export interface DashboardOverviewData {
   todoTasks: number
   progressTasks: number
   doneTasks: number
+  boardStats: Record<string, BoardCountStats>
 }
 
 const emptyOverview: DashboardOverviewData = {
@@ -29,6 +35,7 @@ const emptyOverview: DashboardOverviewData = {
   todoTasks: 0,
   progressTasks: 0,
   doneTasks: 0,
+  boardStats: {},
 }
 
 function getColumnBucket(name: string) {
@@ -76,8 +83,14 @@ export function useDashboardOverview(boards: Board[]) {
       let progressTasks = 0
       let doneTasks = 0
 
+      const boardStats: Record<string, BoardCountStats> = {}
+
       boardResults.forEach(({ board, taskResults }) => {
+        const columnCount = taskResults.length
+        let boardTaskCount = 0
+
         taskResults.forEach(({ column, tasks: columnTasks }) => {
+          boardTaskCount += columnTasks.length
           const bucket = getColumnBucket(column.name)
           if (bucket === "done") doneTasks += columnTasks.length
           else if (bucket === "progress") progressTasks += columnTasks.length
@@ -92,6 +105,11 @@ export function useDashboardOverview(boards: Board[]) {
             })
           })
         })
+
+        boardStats[board.id] = {
+          columnCount,
+          taskCount: boardTaskCount,
+        }
       })
 
       setOverview({
@@ -101,6 +119,7 @@ export function useDashboardOverview(boards: Board[]) {
         todoTasks,
         progressTasks,
         doneTasks,
+        boardStats,
       })
       setIsLoading(false)
     }
