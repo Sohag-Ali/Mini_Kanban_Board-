@@ -205,12 +205,12 @@ export function MemberList({
                     )}
 
                     {/* Remove Action Button */}
-                    {(isOwner || isSelf) && (
+                    {isOwner && !isSelf && (
                       <Button
                         variant="ghost"
                         size="icon-xs"
                         onClick={() => onRemoveMemberClick(member)}
-                        title={isSelf ? "Leave board" : "Remove member"}
+                        title="Remove member"
                         className="text-muted-foreground hover:text-destructive hover:bg-destructive/10"
                       >
                         <Trash2 className="h-4 w-4" />

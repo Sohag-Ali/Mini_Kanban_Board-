@@ -2,6 +2,7 @@ import httpStatus from 'http-status'
 import { BoardRole, Prisma } from '../../../generated/prisma/client'
 import { prisma } from '../../lib/prisma'
 import { AppError } from '../../utils/appError'
+import { assertBoardAccess } from '../../utils/boardAccess'
 import {
 	IAddBoardMemberPayload,
 	IUpdateBoardMemberPayload,
@@ -31,11 +32,6 @@ const addMember = async (
 ) => {
 	await assertBoardOwner(requesterId, boardId)
 
-	if (typeof payload.email !== 'string' || !payload.email.trim()) {
-		throw new AppError(httpStatus.BAD_REQUEST, 'A member email is required')
-	}
-
-	const email = payload.email.trim().toLowerCase()
 	const role = payload.role ?? BoardRole.VIEWER
 
 	if (role !== BoardRole.EDITOR && role !== BoardRole.VIEWER) {
@@ -43,12 +39,22 @@ const addMember = async (
 	}
 
 	const user = await prisma.user.findUnique({
-		where: { email },
+		where: payload.userId
+			? { id: payload.userId }
+			: { email: payload.email?.trim().toLowerCase() || '' },
 		select: { id: true, name: true, email: true },
 	})
 
+	if (!payload.userId && (!payload.email || !payload.email.trim())) {
+		throw new AppError(httpStatus.BAD_REQUEST, 'A member user or email is required')
+	}
+
 	if (!user) {
 		throw new AppError(httpStatus.NOT_FOUND, 'User not found')
+	}
+
+	if (user.id === requesterId) {
+		throw new AppError(httpStatus.BAD_REQUEST, 'You are already the board owner')
 	}
 
 	try {
@@ -79,7 +85,7 @@ const addMember = async (
 }
 
 const findMembers = async (requesterId: string, boardId: string) => {
-	await assertBoardOwner(requesterId, boardId)
+	await assertBoardAccess(requesterId, boardId)
 
 	return prisma.boardMember.findMany({
 		where: { boardId },

@@ -83,13 +83,13 @@ export function BoardCard({
             {isOwner ? "Owner" : "Shared"}
           </Badge>
 
-          {(onEdit || (isOwner && onDelete)) && <DropdownMenu>
+          {isOwner && (onEdit || onDelete) && <DropdownMenu>
             <DropdownMenuTrigger className="rounded-lg p-1 text-muted-foreground hover:bg-muted hover:text-foreground focus:outline-none">
               <MoreVertical className="h-4 w-4" />
               <span className="sr-only">Open menu</span>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-40">
-              {onEdit && (
+              {isOwner && onEdit && (
                 <DropdownMenuItem onClick={() => onEdit(board)} className="gap-2">
                   <Pencil className="h-4 w-4" />
                   <span>Edit</span>

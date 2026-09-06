@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils"
 interface BoardStatsProps {
   total: number
   owned: number
+  shared: number
 }
 
 const stats = [
@@ -18,9 +19,9 @@ const stats = [
   { label: "Task insights", icon: LayoutList, color: "text-violet-500", surface: "bg-violet-500/10", key: "tasks" },
 ] as const
 
-export function BoardStats({ total, owned }: BoardStatsProps) {
+export function BoardStats({ total, owned, shared }: BoardStatsProps) {
   const reduceMotion = useReducedMotion()
-  const values = { total, owned, shared: null, tasks: null }
+  const values = { total, owned, shared, tasks: null }
 
   return (
     <motion.div

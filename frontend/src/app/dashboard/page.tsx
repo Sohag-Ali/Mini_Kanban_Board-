@@ -38,6 +38,8 @@ function DashboardContent() {
   const [filter, setFilter] = React.useState<BoardFilter>("all")
   const [sort, setSort] = React.useState<BoardSort>("recent")
   const [view, setView] = React.useState<BoardView>("grid")
+  const ownedBoards = boards.filter((board) => board.ownerId === user?.id)
+  const sharedBoards = boards.filter((board) => board.ownerId !== user?.id)
 
   const handleEditClick = React.useCallback((board: Board) => {
     setSelectedBoard(board)
@@ -51,7 +53,7 @@ function DashboardContent() {
 
   const visibleBoards = React.useMemo(() => {
     const filtered = boards.filter((board) => {
-      if (filter === "shared") return false
+      if (filter === "shared") return board.ownerId !== user?.id
       if (filter === "owned") return board.ownerId === user?.id
       return true
     })
@@ -68,13 +70,14 @@ function DashboardContent() {
         <div className="pointer-events-none absolute inset-x-0 top-0 h-80 bg-[radial-gradient(circle_at_10%_0%,_color-mix(in_oklch,var(--primary)_16%,transparent),_transparent_35%),radial-gradient(circle_at_90%_0%,_color-mix(in_oklch,var(--chart-2)_12%,transparent),_transparent_32%)]" />
         <div className="container relative mx-auto space-y-8 px-4 py-8 sm:px-6 lg:py-10">
           <BoardPageHeader userName={user?.name} onCreate={() => setIsCreateOpen(true)} />
-          <BoardStats total={boards.length} owned={boards.filter((board) => board.ownerId === user?.id).length} />
+          <BoardStats total={boards.length} owned={ownedBoards.length} shared={sharedBoards.length} />
           <BoardToolbar
             filter={filter}
             sort={sort}
             view={view}
             total={boards.length}
-            owned={boards.filter((board) => board.ownerId === user?.id).length}
+            owned={ownedBoards.length}
+            shared={sharedBoards.length}
             isRefreshing={isLoading}
             onFilterChange={setFilter}
             onSortChange={setSort}
@@ -91,7 +94,7 @@ function DashboardContent() {
           ) : visibleBoards.length === 0 ? (
             <EmptyState
               title={filter === "shared" ? "No shared boards available" : "No boards yet"}
-              description={filter === "shared" ? "Shared board information is not available from the current boards response." : "Create your first Kanban board and start organizing your work."}
+              description={filter === "shared" ? "Boards shared with your account will appear here." : "Create your first Kanban board and start organizing your work."}
               actionLabel={filter === "shared" ? undefined : "Create board"}
               onAction={filter === "shared" ? undefined : () => setIsCreateOpen(true)}
             />

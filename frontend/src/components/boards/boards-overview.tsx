@@ -13,7 +13,7 @@ import { EmptyState } from "@/components/common/empty-state"
 import { ErrorState } from "@/components/common/error-state"
 import { BoardCardSkeleton } from "@/components/common/loading-skeleton"
 
-export function BoardsOverview() {
+export function BoardsOverview({ filter = "all" }: { filter?: "all" | "shared" }) {
   const { user } = useAuth()
   const { boards, isLoading, error, refetch, updateBoard, deleteBoard } = useBoards()
   const [selectedBoard, setSelectedBoard] = React.useState<Board | null>(null)
@@ -44,12 +44,16 @@ export function BoardsOverview() {
     return <ErrorState title="Failed to load boards" description={error} onRetry={refetch} />
   }
 
-  if (boards.length === 0) {
+  const visibleBoards = filter === "shared"
+    ? boards.filter((board) => board.ownerId !== user?.id)
+    : boards
+
+  if (visibleBoards.length === 0) {
     return (
       <EmptyState
         icon={FolderKanban}
-        title="No boards yet"
-        description="Your accessible boards will appear here."
+        title={filter === "shared" ? "No shared boards yet" : "No boards yet"}
+        description={filter === "shared" ? "Boards shared with your account will appear here." : "Your accessible boards will appear here."}
       />
     )
   }
@@ -57,7 +61,7 @@ export function BoardsOverview() {
   return (
     <>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {boards.map((board) => (
+        {visibleBoards.map((board) => (
           <BoardCard
             key={board.id}
             board={board}

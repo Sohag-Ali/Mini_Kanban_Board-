@@ -1,5 +1,6 @@
 export interface IAddBoardMemberPayload {
-	email: string
+	userId?: string
+	email?: string
 	role?: 'EDITOR' | 'VIEWER'
 }
 

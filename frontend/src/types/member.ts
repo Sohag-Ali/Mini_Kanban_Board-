@@ -16,7 +16,8 @@ export interface BoardMember {
 }
 
 export interface AddBoardMemberPayload {
-  email: string
+  userId?: string
+  email?: string
   role?: 'EDITOR' | 'VIEWER'
 }
 

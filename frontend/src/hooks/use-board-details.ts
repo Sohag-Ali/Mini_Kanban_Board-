@@ -40,15 +40,6 @@ export function useBoardDetails(boardId: string) {
 
       if (boardRes.success && boardRes.data) {
         setBoard(boardRes.data)
-      } else if (columnsRes.success && columnsRes.data) {
-        // Fallback for shared non-owner members if backend getBoardById enforces owner check
-        setBoard({
-          id: boardId,
-          name: "Kanban Board",
-          ownerId: "",
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        })
       } else {
         setError(boardRes.message || "Failed to load board details")
         setIsLoading(false)

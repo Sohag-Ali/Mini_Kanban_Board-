@@ -2,6 +2,7 @@ import httpStatus from 'http-status'
 import { Prisma } from '../../../generated/prisma/client'
 import { prisma } from '../../lib/prisma'
 import { AppError } from '../../utils/appError'
+import { assertBoardAccess, assertBoardOwner } from '../../utils/boardAccess'
 import { ICreateBoardPayload, IUpdateBoardPayload } from './boards.interface'
 
 
@@ -62,32 +63,26 @@ const create = async (
 
 const findAll = async (userId: string) => {
     return prisma.board.findMany({
-        where: { ownerId: userId },
+        where: {
+          OR: [
+            { ownerId: userId },
+            { members: { some: { userId } } },
+          ],
+        },
         orderBy: { createdAt: 'desc' },
     })
 }
 
 const findOne = async (userId: string, boardId: string) => {
-    const board = await prisma.board.findUnique({
-        where: { id: boardId },
-    })
-
-    if (!board) {
-        throw new AppError(httpStatus.NOT_FOUND, 'Board not found')
-    }
-
-    if (board.ownerId !== userId) {
-        throw new AppError(httpStatus.FORBIDDEN, 'You do not have access to this board')
-    }
-
-    return board
+  const access = await assertBoardAccess(userId, boardId)
+  return prisma.board.findUniqueOrThrow({ where: { id: access.board.id } })
 }
 
 const update = async (
     userId: string,
     boardId: string,
     updateBoardDto: IUpdateBoardPayload,) => {
-    await findOne(userId, boardId)
+    await assertBoardOwner(userId, boardId)
 
     try {
         return await prisma.board.update({
@@ -102,7 +97,7 @@ const update = async (
 }
 
 const remove = async (userId: string, boardId: string) => {
-    await findOne(userId, boardId)
+    await assertBoardOwner(userId, boardId)
 
     try {
         return await prisma.board.delete({

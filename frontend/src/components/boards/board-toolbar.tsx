@@ -17,6 +17,7 @@ interface BoardToolbarProps {
   view: BoardView
   total: number
   owned: number
+  shared: number
   isRefreshing: boolean
   onFilterChange: (filter: BoardFilter) => void
   onSortChange: (sort: BoardSort) => void
@@ -30,6 +31,7 @@ export function BoardToolbar({
   view,
   total,
   owned,
+  shared,
   isRefreshing,
   onFilterChange,
   onSortChange,
@@ -40,7 +42,7 @@ export function BoardToolbar({
   const filters = [
     { label: "All boards", value: "all" as const, count: total },
     { label: "My boards", value: "owned" as const, count: owned },
-    { label: "Shared with me", value: "shared" as const, count: null },
+    { label: "Shared with me", value: "shared" as const, count: shared },
   ]
 
   return (

@@ -10,6 +10,7 @@ import { BoardMembersRoutes } from './app/module/board-members/board-members.rou
 import { BoardsRoutes } from './app/module/boards/boards.route'
 import { ColumnRoutes } from './app/module/cloumns/column.route'
 import { TaskRoutes } from './app/module/tasks/task.route'
+import { UserRoutes } from './app/module/users/user.route'
 
 const app: Application = express()
 
@@ -28,6 +29,7 @@ app.use(express.json())
 app.use(cookieParser())
 
 app.use('/api/v1/auth', AuthRoutes)
+app.use('/api/v1/users', UserRoutes)
 app.use('/api/v1/boards', BoardsRoutes)
 app.use('/api/v1/boards/:boardId/members', BoardMembersRoutes)
 app.use('/api/v1/boards/:boardId/columns', ColumnRoutes)
