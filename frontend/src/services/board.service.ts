@@ -1,6 +1,6 @@
 import apiClient from '@/lib/axios'
 import { ApiResponse } from '@/types/api'
-import { Board, CreateBoardPayload, UpdateBoardPayload } from '@/types/board'
+import { Board, CreateBoardPayload, SharedBoard, UpdateBoardPayload } from '@/types/board'
 
 export const boardService = {
   async createBoard(payload: CreateBoardPayload): Promise<ApiResponse<Board>> {
@@ -10,6 +10,11 @@ export const boardService = {
 
   async getAllBoards(): Promise<ApiResponse<Board[]>> {
     const response = await apiClient.get<ApiResponse<Board[]>>('/boards')
+    return response.data
+  },
+
+  async getSharedBoards(): Promise<ApiResponse<SharedBoard[]>> {
+    const response = await apiClient.get<ApiResponse<SharedBoard[]>>('/boards/shared')
     return response.data
   },
 

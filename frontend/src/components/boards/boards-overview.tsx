@@ -13,7 +13,7 @@ import { EmptyState } from "@/components/common/empty-state"
 import { ErrorState } from "@/components/common/error-state"
 import { BoardCardSkeleton } from "@/components/common/loading-skeleton"
 
-export function BoardsOverview({ filter = "all" }: { filter?: "all" | "shared" }) {
+export function BoardsOverview({ filter = "all" }: { filter?: "all" | "owned" | "shared" }) {
   const { user } = useAuth()
   const { boards, isLoading, error, refetch, updateBoard, deleteBoard } = useBoards()
   const [selectedBoard, setSelectedBoard] = React.useState<Board | null>(null)
@@ -46,14 +46,16 @@ export function BoardsOverview({ filter = "all" }: { filter?: "all" | "shared" }
 
   const visibleBoards = filter === "shared"
     ? boards.filter((board) => board.ownerId !== user?.id)
-    : boards
+    : filter === "owned"
+      ? boards.filter((board) => board.ownerId === user?.id)
+      : boards
 
   if (visibleBoards.length === 0) {
     return (
       <EmptyState
         icon={FolderKanban}
         title={filter === "shared" ? "No shared boards yet" : "No boards yet"}
-        description={filter === "shared" ? "Boards shared with your account will appear here." : "Your accessible boards will appear here."}
+        description={filter === "shared" ? "Boards shared with your account will appear here." : "Your owned boards will appear here."}
       />
     )
   }

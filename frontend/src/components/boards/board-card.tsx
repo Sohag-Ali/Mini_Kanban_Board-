@@ -5,7 +5,7 @@ import Link from "next/link"
 import { motion, useReducedMotion } from "motion/react"
 import { ArrowRight, Clock, MoreVertical, Pencil, Trash2, Sparkles } from "lucide-react"
 
-import { Board } from "@/types/board"
+import { Board, SharedBoard } from "@/types/board"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -29,6 +29,8 @@ interface BoardCardProps {
   currentUserId?: string
   onEdit?: (board: Board) => void
   onDelete?: (board: Board) => void
+  memberRole?: SharedBoard["role"]
+  ownerName?: string
 }
 
 export function BoardCard({
@@ -36,6 +38,8 @@ export function BoardCard({
   currentUserId,
   onEdit,
   onDelete,
+  memberRole,
+  ownerName,
 }: BoardCardProps) {
   const reduceMotion = useReducedMotion()
   const isOwner = currentUserId ? board.ownerId === currentUserId : true
@@ -80,7 +84,7 @@ export function BoardCard({
             variant={isOwner ? "default" : "secondary"}
             className="text-[10px] font-medium uppercase tracking-wider"
           >
-            {isOwner ? "Owner" : "Shared"}
+            {memberRole || (isOwner ? "Owner" : "Shared")}
           </Badge>
 
           {isOwner && (onEdit || onDelete) && <DropdownMenu>
@@ -113,7 +117,7 @@ export function BoardCard({
         <div className="rounded-xl border border-border/60 bg-background/40 px-3 py-2.5 text-xs text-muted-foreground">
           <span className="font-medium text-foreground">{isOwner ? "Personal workspace" : "Collaborative workspace"}</span>
           <span className="mx-2 text-border">•</span>
-          Board activity is available inside the workspace
+          {ownerName ? `Shared by ${ownerName}` : "Board activity is available inside the workspace"}
         </div>
       </CardContent>
 

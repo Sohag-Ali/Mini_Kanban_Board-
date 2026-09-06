@@ -1,5 +1,5 @@
 import { UsersRound } from "lucide-react"
-import { BoardsOverview } from "@/components/boards/boards-overview"
+import { SharedBoardsOverview } from "@/components/boards/shared-boards-overview"
 
 export default function SharedBoardsPage() {
   return (
@@ -13,7 +13,7 @@ export default function SharedBoardsPage() {
           <p className="text-sm text-muted-foreground">Boards other people have shared with you.</p>
         </div>
       </div>
-      <BoardsOverview filter="shared" />
+      <SharedBoardsOverview />
     </div>
   )
 }

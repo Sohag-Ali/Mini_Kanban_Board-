@@ -73,6 +73,31 @@ const findAll = async (userId: string) => {
     })
 }
 
+const findShared = async (userId: string) => {
+  const memberships = await prisma.boardMember.findMany({
+    where: {
+      userId,
+      board: { ownerId: { not: userId } },
+    },
+    orderBy: { board: { updatedAt: 'desc' } },
+    select: {
+      role: true,
+      board: {
+        select: {
+          id: true,
+          name: true,
+          ownerId: true,
+          createdAt: true,
+          updatedAt: true,
+          owner: { select: { id: true, name: true, email: true } },
+        },
+      },
+    },
+  })
+
+  return memberships.map(({ board, role }) => ({ ...board, role }))
+}
+
 const findOne = async (userId: string, boardId: string) => {
   const access = await assertBoardAccess(userId, boardId)
   return prisma.board.findUniqueOrThrow({ where: { id: access.board.id } })
@@ -115,6 +140,7 @@ const remove = async (userId: string, boardId: string) => {
 export const BoardsService = {
     create,
     findAll,
+    findShared,
     findOne,
     update,
     remove,

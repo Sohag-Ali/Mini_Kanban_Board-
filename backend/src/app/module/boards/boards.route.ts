@@ -8,6 +8,7 @@ const router = Router()
 
 router.post('/', auth(), BoardsController.createBoards )
 router.get('/', auth(), BoardsController.getAllBoards )
+router.get('/shared', auth(), BoardsController.getSharedBoards)
 router.get('/:id', auth(), BoardsController.getBoardById)
 router.patch('/:id', auth(), BoardsController.updateBoard)
 router.delete('/:id', auth(), BoardsController.deleteBoard)

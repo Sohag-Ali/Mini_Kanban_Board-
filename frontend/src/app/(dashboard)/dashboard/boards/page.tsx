@@ -9,7 +9,7 @@ export default function MyBoardsPage() {
           All boards currently available to your account.
         </p>
       </div>
-      <BoardsOverview />
+      <BoardsOverview filter="owned" />
     </div>
   )
 }

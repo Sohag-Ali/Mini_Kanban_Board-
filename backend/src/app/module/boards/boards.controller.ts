@@ -50,6 +50,23 @@ const getAllBoards = catchAsync(async (req: Request, res: Response) => {
     })
 })
 
+const getSharedBoards = catchAsync(async (req: Request, res: Response) => {
+    const user = req.user
+
+    if (!user) {
+        throw new Error('User information is missing in the request')
+    }
+
+    const result = await BoardsService.findShared(user.userId)
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: 'Shared boards fetched successfully',
+        data: result,
+    })
+})
+
 const getBoardById = catchAsync(async (req: Request, res: Response) => {
     const user = req.user
 
@@ -109,6 +126,7 @@ const deleteBoard = catchAsync(async (req: Request, res: Response) => {
 export const BoardsController = {
     createBoards,
     getAllBoards,
+    getSharedBoards,
     getBoardById,
     updateBoard,
     deleteBoard,
