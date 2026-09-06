@@ -4,7 +4,7 @@ A full-stack collaborative Kanban workspace built with Next.js, React, TypeScrip
 
 ## Live Demo
 
-**Live application:** `https://your-deployment-url.example.com`
+**Live application:** `https://mini-board-ecru.vercel.app/`
 
 Replace the placeholder above with the deployed frontend URL when the application is published.
 
