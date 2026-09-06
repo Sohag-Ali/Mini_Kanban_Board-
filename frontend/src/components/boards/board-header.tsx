@@ -16,6 +16,7 @@ import { Board } from "@/types/board"
 import { BoardMember } from "@/types/member"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { ThemeToggle } from "@/components/common/theme-toggle"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -89,6 +90,7 @@ export function BoardHeader({
 
         {/* Right Section: Members Button & Actions */}
         <div className="flex items-center gap-2">
+          <ThemeToggle />
           {/* Refresh Button */}
           {onRefresh && (
             <Button

@@ -28,6 +28,7 @@ import { AddMemberDialog } from "@/components/members/add-member-dialog"
 import { RemoveMemberDialog } from "@/components/members/remove-member-dialog"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
+import { DashboardLayout } from "@/components/layout/dashboard-layout"
 
 function BoardDetailContent() {
   const params = useParams()
@@ -145,7 +146,8 @@ function BoardDetailContent() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col">
+    <DashboardLayout>
+      <div className="min-h-screen bg-background text-foreground flex flex-col">
       {/* Header Composition */}
       {board && (
         <BoardHeader
@@ -303,7 +305,8 @@ function BoardDetailContent() {
           />
         </>
       )}
-    </div>
+      </div>
+    </DashboardLayout>
   )
 }
 

@@ -3,6 +3,7 @@ import Link from "next/link"
 import { Kanban } from "lucide-react"
 
 import { PublicRoute } from "@/components/auth/public-route"
+import { ThemeToggle } from "@/components/common/theme-toggle"
 import { RegisterForm } from "@/components/auth/register-form"
 
 export const metadata: Metadata = {
@@ -15,7 +16,7 @@ export default function RegisterPage() {
     <PublicRoute>
       <div className="container relative grid min-h-screen flex-col items-center justify-center lg:max-w-none lg:px-0">
         <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[400px]">
-          <div className="flex flex-col items-center space-y-2 text-center">
+          <div className="flex items-center justify-between gap-4">
             <Link
               href="/"
               className="flex items-center gap-2 text-xl font-bold tracking-tight transition-transform hover:scale-105"
@@ -25,6 +26,7 @@ export default function RegisterPage() {
               </div>
               <span>Mini Kanban</span>
             </Link>
+            <ThemeToggle />
           </div>
           <RegisterForm />
         </div>

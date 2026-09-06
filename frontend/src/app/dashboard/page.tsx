@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Kanban, LogOut, Plus, RefreshCw, User as UserIcon } from "lucide-react"
+import { Plus, RefreshCw } from "lucide-react"
 
 import { Board } from "@/types/board"
 import { useAuth } from "@/hooks/use-auth"
@@ -13,9 +13,10 @@ import { EditBoardDialog } from "@/components/boards/edit-board-dialog"
 import { DeleteBoardDialog } from "@/components/boards/delete-board-dialog"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { DashboardLayout } from "@/components/layout/dashboard-layout"
 
 function DashboardContent() {
-  const { user, logout } = useAuth()
+  const { user } = useAuth()
   const {
     boards,
     isLoading,
@@ -42,37 +43,8 @@ function DashboardContent() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col">
-      {/* Top Header */}
-      <header className="sticky top-0 z-30 border-b border-border/40 bg-card/60 backdrop-blur-md">
-        <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6">
-          <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-md">
-              <Kanban className="h-5 w-5" />
-            </div>
-            <span className="font-bold text-xl tracking-tight">Mini Kanban</span>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <div className="hidden items-center gap-2 rounded-full border border-border/40 bg-muted/30 px-3 py-1 text-xs sm:flex">
-              <UserIcon className="h-3.5 w-3.5 text-muted-foreground" />
-              <span className="font-medium text-foreground">{user?.name}</span>
-            </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={logout}
-              className="gap-2"
-            >
-              <LogOut className="h-4 w-4" />
-              <span className="hidden sm:inline">Logout</span>
-            </Button>
-          </div>
-        </div>
-      </header>
-
-      {/* Main Content Area */}
-      <main className="container mx-auto flex-1 px-4 py-8 sm:px-6">
+    <DashboardLayout>
+      <div className="container mx-auto px-4 py-8 sm:px-6">
         <div className="space-y-8">
           {/* Dashboard Header Bar */}
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -125,7 +97,7 @@ function DashboardContent() {
             onDelete={handleDeleteClick}
           />
         </div>
-      </main>
+      </div>
 
       {/* Dialogs */}
       <CreateBoardDialog
@@ -147,7 +119,7 @@ function DashboardContent() {
         onOpenChange={setIsDeleteOpen}
         onConfirm={deleteBoard}
       />
-    </div>
+    </DashboardLayout>
   )
 }
 

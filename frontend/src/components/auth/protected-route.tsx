@@ -11,14 +11,14 @@ interface ProtectedRouteProps {
 }
 
 export function ProtectedRoute({ children }: ProtectedRouteProps) {
-  const { isAuthenticated, isLoading } = useAuth()
+  const { isAuthenticated, isLoading, isLoggingOut } = useAuth()
   const router = useRouter()
 
   React.useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
+    if (!isLoading && !isAuthenticated && !isLoggingOut) {
       router.replace("/login")
     }
-  }, [isLoading, isAuthenticated, router])
+  }, [isLoading, isAuthenticated, isLoggingOut, router])
 
   if (isLoading) {
     return (
@@ -31,6 +31,10 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
         </div>
       </div>
     )
+  }
+
+  if (isLoggingOut) {
+    return null
   }
 
   if (!isAuthenticated) {

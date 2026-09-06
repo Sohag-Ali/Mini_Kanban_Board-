@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { useRouter } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { toast } from "sonner"
 
 import { authService } from "@/services/auth.service"
@@ -11,6 +11,7 @@ interface AuthContextType {
   user: User | null
   isLoading: boolean
   isAuthenticated: boolean
+  isLoggingOut: boolean
   setAuthData: (user: User, accessToken?: string, refreshToken?: string) => void
   logout: () => void
   refreshUser: () => Promise<void>
@@ -21,12 +22,28 @@ const AuthContext = React.createContext<AuthContextType | undefined>(undefined)
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = React.useState<User | null>(null)
   const [isLoading, setIsLoading] = React.useState<boolean>(true)
+  const [isLoggingOut, setIsLoggingOut] = React.useState(false)
+  const authRequestId = React.useRef(0)
+  const isLoggingOutRef = React.useRef(false)
+  const pathname = usePathname()
   const router = useRouter()
 
+  React.useEffect(() => {
+    if (pathname === "/" && isLoggingOutRef.current) {
+      isLoggingOutRef.current = false
+      setIsLoggingOut(false)
+    }
+  }, [pathname])
+
   const fetchCurrentUser = React.useCallback(async () => {
+    isLoggingOutRef.current = false
+    const requestId = ++authRequestId.current
     setIsLoading(true)
     try {
       const response = await authService.getMe()
+      if (requestId !== authRequestId.current || isLoggingOutRef.current) {
+        return
+      }
       if (response.success && response.data) {
         setUser(response.data)
       } else {
@@ -44,6 +61,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             }
           }
           const meRes = await authService.getMe()
+          if (requestId !== authRequestId.current || isLoggingOutRef.current) {
+            return
+          }
           if (meRes.success && meRes.data) {
             setUser(meRes.data)
           } else {
@@ -53,6 +73,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setUser(null)
         }
       } catch (_refreshErr) {
+        if (requestId !== authRequestId.current || isLoggingOutRef.current) {
+          return
+        }
         setUser(null)
         if (typeof window !== "undefined") {
           localStorage.removeItem("accessToken")
@@ -60,7 +83,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
       }
     } finally {
-      setIsLoading(false)
+      if (requestId === authRequestId.current && !isLoggingOutRef.current) {
+        setIsLoading(false)
+      }
     }
   }, [])
 
@@ -70,6 +95,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const setAuthData = React.useCallback(
     (userData: User, accessToken?: string, refreshToken?: string) => {
+      isLoggingOutRef.current = false
+      setIsLoggingOut(false)
+      authRequestId.current += 1
       setUser(userData)
       if (typeof window !== "undefined") {
         if (accessToken) localStorage.setItem("accessToken", accessToken)
@@ -80,13 +108,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   )
 
   const logout = React.useCallback(() => {
+    isLoggingOutRef.current = true
+    setIsLoggingOut(true)
+    authRequestId.current += 1
     setUser(null)
+    setIsLoading(false)
     if (typeof window !== "undefined") {
       localStorage.removeItem("accessToken")
       localStorage.removeItem("refreshToken")
     }
     toast.success("Logged out successfully")
-    router.push("/login")
+    router.replace("/")
   }, [router])
 
   const value = React.useMemo(
@@ -94,11 +126,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       user,
       isLoading,
       isAuthenticated: !!user,
+      isLoggingOut,
       setAuthData,
       logout,
       refreshUser: fetchCurrentUser,
     }),
-    [user, isLoading, setAuthData, logout, fetchCurrentUser]
+    [user, isLoading, isLoggingOut, setAuthData, logout, fetchCurrentUser]
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

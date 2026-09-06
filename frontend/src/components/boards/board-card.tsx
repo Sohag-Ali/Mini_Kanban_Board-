@@ -24,8 +24,8 @@ import {
 interface BoardCardProps {
   board: Board
   currentUserId?: string
-  onEdit: (board: Board) => void
-  onDelete: (board: Board) => void
+  onEdit?: (board: Board) => void
+  onDelete?: (board: Board) => void
 }
 
 export function BoardCard({
@@ -62,17 +62,19 @@ export function BoardCard({
             {isOwner ? "Owner" : "Shared"}
           </Badge>
 
-          <DropdownMenu>
+          {(onEdit || (isOwner && onDelete)) && <DropdownMenu>
             <DropdownMenuTrigger className="rounded-lg p-1 text-muted-foreground hover:bg-muted hover:text-foreground focus:outline-none">
               <MoreVertical className="h-4 w-4" />
               <span className="sr-only">Open menu</span>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-40">
-              <DropdownMenuItem onClick={() => onEdit(board)} className="gap-2">
-                <Pencil className="h-4 w-4" />
-                <span>Edit</span>
-              </DropdownMenuItem>
-              {isOwner && (
+              {onEdit && (
+                <DropdownMenuItem onClick={() => onEdit(board)} className="gap-2">
+                  <Pencil className="h-4 w-4" />
+                  <span>Edit</span>
+                </DropdownMenuItem>
+              )}
+              {isOwner && onDelete && (
                 <DropdownMenuItem
                   onClick={() => onDelete(board)}
                   className="gap-2 text-destructive focus:bg-destructive/10 focus:text-destructive"
@@ -82,7 +84,7 @@ export function BoardCard({
                 </DropdownMenuItem>
               )}
             </DropdownMenuContent>
-          </DropdownMenu>
+          </DropdownMenu>}
         </div>
       </CardHeader>
 
