@@ -147,7 +147,8 @@ function BoardDetailContent() {
 
   return (
     <DashboardLayout>
-      <div className="min-h-screen bg-background text-foreground flex flex-col">
+      <div className="relative min-h-screen overflow-hidden bg-background text-foreground">
+        <div className="pointer-events-none absolute inset-0 -z-0 bg-[radial-gradient(circle_at_15%_10%,_color-mix(in_oklch,var(--primary)_14%,transparent),_transparent_28%),radial-gradient(circle_at_85%_18%,_color-mix(in_oklch,var(--chart-2)_10%,transparent),_transparent_26%)]" />
       {/* Header Composition */}
       {board && (
         <BoardHeader
@@ -163,7 +164,7 @@ function BoardDetailContent() {
       )}
 
       {/* Main Board View Container */}
-      <main className="container mx-auto flex-1 px-4 py-6 sm:px-6">
+      <main className="relative z-10 container mx-auto flex-1 px-4 py-6 sm:px-6 lg:py-8">
         <ColumnList
           columns={columns}
           permissions={permissions}

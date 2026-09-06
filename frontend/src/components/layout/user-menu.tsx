@@ -1,12 +1,13 @@
 "use client"
 
-import { LogOut, Settings, UserRound } from "lucide-react"
+import { ChevronDown, LogOut, Settings, UserRound } from "lucide-react"
 import Link from "next/link"
 
 import { useAuth } from "@/hooks/use-auth"
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -29,16 +30,19 @@ export function UserMenu() {
         <span className="hidden max-w-32 truncate text-sm font-medium sm:inline">
           {user?.name || "Account"}
         </span>
+        <ChevronDown className="size-4 text-muted-foreground" />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">
-        <DropdownMenuLabel className="max-w-full truncate">
-          <span className="block truncate">{user?.name || "Account"}</span>
-          {user?.email && (
-            <span className="mt-1 block truncate text-xs font-normal text-muted-foreground">
-              {user.email}
-            </span>
-          )}
-        </DropdownMenuLabel>
+        <DropdownMenuGroup>
+          <DropdownMenuLabel className="max-w-full truncate">
+            <span className="block truncate">{user?.name || "Account"}</span>
+            {user?.email && (
+              <span className="mt-1 block truncate text-xs font-normal text-muted-foreground">
+                {user.email}
+              </span>
+            )}
+          </DropdownMenuLabel>
+        </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem render={<Link href="/profile" />} className="gap-2">
           <UserRound className="size-4" />

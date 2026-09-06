@@ -53,7 +53,7 @@ export function SortableTaskCard({
       {...(disabled ? {} : listeners)}
       className={disabled ? "" : "touch-none"}
     >
-      <TaskCard task={task} onEdit={onEdit} onDelete={onDelete} />
+      <TaskCard task={task} isDragging={isDragging} onEdit={onEdit} onDelete={onDelete} />
     </div>
   )
 }

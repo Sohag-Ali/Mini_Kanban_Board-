@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { motion, useReducedMotion } from "motion/react"
 import {
   closestCorners,
   DndContext,
@@ -25,6 +26,8 @@ import { ErrorState } from "@/components/common/error-state"
 import { EmptyState } from "@/components/common/empty-state"
 import { ColumnCardSkeleton } from "@/components/common/loading-skeleton"
 import { Button } from "@/components/ui/button"
+import { fadeUp, staggerChildren } from "@/lib/animations"
+import { cn } from "@/lib/utils"
 
 interface ColumnListProps {
   columns: ColumnWithTasks[]
@@ -61,6 +64,7 @@ export function ColumnList({
   onMoveTask,
 }: ColumnListProps) {
   const [activeTask, setActiveTask] = React.useState<Task | null>(null)
+  const reduceMotion = useReducedMotion()
 
   const canCreateColumn = permissions ? permissions.canCreateColumn : true
   const canEditColumn = permissions ? permissions.canEditColumn : true
@@ -191,15 +195,18 @@ export function ColumnList({
       <div className="flex flex-col space-y-4">
         {/* Column Toolbar */}
         <div className="flex items-center justify-between">
-          <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-            Columns ({sortedColumns.length})
-          </span>
+          <div>
+            <span className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+              Board flow
+            </span>
+            <p className="mt-1 text-sm text-muted-foreground">Move work from idea to done.</p>
+          </div>
           {canCreateColumn && (
             <Button
               variant="outline"
               size="sm"
               onClick={onAddColumn}
-              className="gap-2 text-xs font-medium"
+              className="gap-2 rounded-xl text-xs font-medium"
             >
               <Plus className="h-3.5 w-3.5" />
               <span>Add Column</span>
@@ -208,7 +215,12 @@ export function ColumnList({
         </div>
 
         {/* Horizontal Track */}
-        <div className="flex flex-row items-start gap-4 overflow-x-auto p-1 pb-4">
+        <motion.div
+          className="flex flex-row items-start gap-4 overflow-x-auto p-1 pb-4"
+          initial="hidden"
+          animate="visible"
+          variants={reduceMotion ? undefined : staggerChildren}
+        >
           {sortedColumns.map((column) => (
             <Column
               key={column.id}
@@ -229,21 +241,24 @@ export function ColumnList({
 
           {/* Quick Add Column Button at end of track */}
           {canCreateColumn && (
-            <button
+            <motion.button
               onClick={onAddColumn}
-              className="flex h-12 w-72 flex-shrink-0 items-center justify-center gap-2 rounded-xl border border-dashed border-border/60 bg-muted/20 text-xs font-medium text-muted-foreground transition-colors hover:border-border hover:bg-muted/50 hover:text-foreground"
+              whileHover={reduceMotion ? undefined : { y: -2 }}
+              variants={reduceMotion ? undefined : fadeUp}
+              className={cn("flex min-h-[220px] w-80 flex-shrink-0 flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-primary/30 bg-primary/[0.03] px-6 text-center text-muted-foreground transition-colors hover:border-primary/60 hover:bg-primary/[0.07] hover:text-foreground")}
             >
-              <Plus className="h-4 w-4" />
-              <span>Add Column</span>
-            </button>
+              <span className="flex size-12 items-center justify-center rounded-2xl bg-primary/10 text-primary"><Plus className="size-6" /></span>
+              <span className="font-semibold">Add Column</span>
+              <span className="max-w-[180px] text-xs leading-5">Create a new column to organize tasks.</span>
+            </motion.button>
           )}
-        </div>
+        </motion.div>
       </div>
 
       {/* Drag Overlay for active task */}
       <DragOverlay>
         {activeTask && canMoveTask ? (
-          <div className="w-72 shadow-2xl rotate-2 cursor-grabbing">
+          <div className="w-80 rotate-2 cursor-grabbing shadow-2xl">
             <TaskCard task={activeTask} />
           </div>
         ) : null}

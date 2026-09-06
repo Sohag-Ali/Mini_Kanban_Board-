@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import Link from "next/link"
+import { motion, useReducedMotion } from "motion/react"
 import {
   ArrowLeft,
   Kanban,
@@ -23,6 +24,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { fadeUp } from "@/lib/animations"
 
 interface BoardHeaderProps {
   board: Board
@@ -45,6 +47,7 @@ export function BoardHeader({
   onDeleteBoard,
   onManageMembers,
 }: BoardHeaderProps) {
+  const reduceMotion = useReducedMotion()
   const isOwner = currentUserId ? board.ownerId === currentUserId : true
 
   // Find user's member role
@@ -55,8 +58,13 @@ export function BoardHeader({
   const userRole = isOwner ? "OWNER" : userMembership?.role || "VIEWER"
 
   return (
-    <header className="sticky top-0 z-30 border-b border-border/40 bg-card/60 backdrop-blur-md">
-      <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6">
+    <motion.header
+      initial="hidden"
+      animate="visible"
+      variants={reduceMotion ? undefined : fadeUp}
+      className="sticky top-0 z-30 border-b border-border/70 bg-background/80 shadow-sm backdrop-blur-xl"
+    >
+      <div className="container mx-auto flex min-h-20 items-center justify-between gap-4 px-4 py-3 sm:px-6">
         {/* Left Section: Back link & Board Title */}
         <div className="flex items-center gap-3">
           <Link href="/dashboard">
@@ -72,16 +80,17 @@ export function BoardHeader({
 
           <div className="h-4 w-px bg-border/60" />
 
-          <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
+          <div className="flex min-w-0 items-center gap-2.5">
+            <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary/20 to-violet-500/20 text-primary ring-1 ring-primary/20">
               <Kanban className="h-4 w-4" />
             </div>
-            <h1 className="text-xl font-bold tracking-tight line-clamp-1">
-              {board.name}
-            </h1>
+            <div className="min-w-0">
+              <p className="hidden text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground sm:block">Current board</p>
+              <h1 className="truncate text-lg font-semibold tracking-tight sm:text-xl">{board.name}</h1>
+            </div>
             <Badge
               variant={isOwner ? "default" : "secondary"}
-              className="text-[10px] uppercase tracking-wider"
+              className="rounded-md text-[10px] uppercase tracking-wider"
             >
               {userRole}
             </Badge>
@@ -152,6 +161,6 @@ export function BoardHeader({
           )}
         </div>
       </div>
-    </header>
+    </motion.header>
   )
 }
