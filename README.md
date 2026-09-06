@@ -156,6 +156,58 @@ You can also start the frontend with:
 npm run dev
 ```
 
+## Docker Setup
+
+Run the full-stack application (PostgreSQL, Express backend, and Next.js frontend) locally using Docker Compose:
+
+### 1. Build images
+```bash
+docker compose build
+```
+*(Or build and launch in one step with `docker compose up -d --build`)*
+
+### 2. Start services
+```bash
+docker compose up -d
+```
+This starts 3 services:
+- `mini_kanban_postgres` (PostgreSQL 16) on port `5432`
+- `mini_kanban_backend` (Express API) on port `5000`
+- `mini_kanban_frontend` (Next.js App) on port `3000`
+
+### 3. Check container status
+```bash
+docker compose ps
+```
+
+### 4. Apply Prisma migrations
+Apply the existing database schema migrations to the containerized PostgreSQL instance safely:
+```bash
+docker compose exec backend npx prisma migrate deploy
+```
+
+### 5. View container logs
+View streamed logs for all containers:
+```bash
+docker compose logs -f
+```
+Or view logs for a specific container:
+```bash
+docker compose logs -f backend
+docker compose logs -f frontend
+docker compose logs -f postgres
+```
+
+### 6. Stop containers
+Stop containers while preserving local database data:
+```bash
+docker compose down
+```
+To stop containers and remove the local database volume:
+```bash
+docker compose down -v
+```
+
 ## Root Scripts
 
 | Command | Description |
