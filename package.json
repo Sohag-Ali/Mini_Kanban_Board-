@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "node api.js && npm --prefix frontend run dev",
-    "dev:frontend": "node api.js && npm --prefix frontend run dev",
-    "dev:backend": "node api.js && npm --prefix backend run dev",
-    "build:frontend": "node api.js && npm --prefix frontend run build",
-    "build:backend": "node api.js && npm --prefix backend run build"
+    "dev": "npm --prefix frontend run dev",
+    "dev:frontend": "npm --prefix frontend run dev",
+    "dev:backend": "npm --prefix backend run dev",
+    "build:frontend": "npm --prefix frontend run build",
+    "build:backend": "npm --prefix backend run build"
   }
 }
